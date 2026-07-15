@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Naresh Kumar — WordPress Developer</title>
+<meta name="description" content="Naresh Kumar, WordPress Developer. Custom themes, plugins, and performance-focused websites.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy: #0E1B32;
+    --navy-soft: #16264A;
+    --paper: #F7F6F2;
+    --paper-dim: #EDEBE4;
+    --brass: #B08D3E;
+    --brass-bright: #D4AF5A;
+    --slate: #4B5568;
+    --ink: #1B2333;
+    --line: #DCD8CC;
+    --radius: 2px;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Inter',sans-serif;
+    font-size:16px;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  .mono{font-family:'JetBrains Mono',monospace;}
+  h1,h2,h3{font-family:'Space Grotesk',sans-serif;letter-spacing:-0.01em;}
+  a{color:inherit;text-decoration:none;}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 32px;}
+  ::selection{background:var(--brass);color:var(--paper);}
+
+  /* Skip link for accessibility */
+  .skip-link{position:absolute;left:-999px;top:0;background:var(--navy);color:var(--paper);padding:10px 16px;z-index:999;}
+  .skip-link:focus{left:16px;top:16px;}
+
+  a:focus-visible, button:focus-visible{outline:2px solid var(--brass);outline-offset:3px;}
+
+  /* ===== NAV ===== */
+  header{
+    position:sticky;top:0;z-index:100;
+    background:rgba(247,246,242,0.92);
+    backdrop-filter:blur(8px);
+    border-bottom:1px solid var(--line);
+  }
+  nav{
+    max-width:1080px;margin:0 auto;padding:20px 32px;
+    display:flex;justify-content:space-between;align-items:center;
+  }
+  .logo{
+    font-family:'Space Grotesk',sans-serif;
+    font-weight:700;font-size:1.15rem;
+    display:flex;align-items:center;gap:8px;
+  }
+  .logo .dot{color:var(--brass);}
+  .nav-links{display:flex;gap:36px;font-size:0.9rem;font-weight:500;}
+  .nav-links a{position:relative;padding:4px 0;color:var(--slate);transition:color .2s;}
+  .nav-links a:hover{color:var(--navy);}
+  .nav-links a::after{
+    content:'';position:absolute;left:0;bottom:0;width:0;height:1px;
+    background:var(--brass);transition:width .25s ease;
+  }
+  .nav-links a:hover::after{width:100%;}
+  .nav-cta{
+    background:var(--navy);color:var(--paper);padding:9px 20px;
+    font-size:0.85rem;font-weight:500;border-radius:var(--radius);
+    transition:background .2s;
+  }
+  .nav-cta:hover{background:var(--brass);}
+  .burger{display:none;background:none;border:none;cursor:pointer;padding:4px;}
+  .burger span{display:block;width:22px;height:2px;background:var(--navy);margin:5px 0;}
+
+  /* ===== HERO ===== */
+  .hero{
+    padding:110px 0 90px;
+    position:relative;
+    overflow:hidden;
+  }
+  .hero .wrap{display:grid;grid-template-columns:1.3fr 1fr;gap:60px;align-items:center;}
+  .eyebrow{
+    font-family:'JetBrains Mono',monospace;font-size:0.8rem;color:var(--brass);
+    letter-spacing:0.08em;text-transform:uppercase;margin-bottom:20px;
+    display:flex;align-items:center;gap:10px;
+  }
+  .eyebrow::before{content:'';width:28px;height:1px;background:var(--brass);}
+  .hero h1{
+    font-size:3.4rem;line-height:1.08;font-weight:700;color:var(--navy);
+    margin-bottom:22px;
+  }
+  .hero h1 em{
+    font-style:normal;color:var(--brass);
+    background:linear-gradient(transparent 70%, rgba(176,141,62,0.22) 70%);
+  }
+  .hero p.lead{
+    font-size:1.08rem;color:var(--slate);max-width:520px;margin-bottom:34px;
+  }
+  .hero-actions{display:flex;gap:16px;flex-wrap:wrap;}
+  .btn{
+    display:inline-flex;align-items:center;gap:8px;
+    padding:14px 26px;font-weight:600;font-size:0.92rem;
+    border-radius:var(--radius);transition:all .2s ease;
+    border:1px solid transparent;
+  }
+  .btn-primary{background:var(--navy);color:var(--paper);}
+  .btn-primary:hover{background:var(--brass);transform:translateY(-1px);}
+  .btn-ghost{border-color:var(--navy);color:var(--navy);}
+  .btn-ghost:hover{background:var(--navy);color:var(--paper);}
+
+  /* Browser mockup - signature element */
+  .browser-mock{
+    background:var(--navy);border-radius:8px;overflow:hidden;
+    box-shadow:0 30px 60px -20px rgba(14,27,50,0.35);
+    transform:rotate(1.5deg);
+  }
+  .browser-bar{
+    display:flex;align-items:center;gap:6px;padding:11px 14px;
+    background:var(--navy-soft);border-bottom:1px solid rgba(255,255,255,0.08);
+  }
+  .browser-bar .b-dot{width:9px;height:9px;border-radius:50%;background:rgba(255,255,255,0.25);}
+  .browser-bar .b-url{
+    margin-left:10px;background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.5);
+    font-family:'JetBrains Mono',monospace;font-size:0.7rem;padding:4px 12px;border-radius:20px;
+    flex:1;
+  }
+  .browser-body{padding:26px 22px;color:rgba(247,246,242,0.85);}
+  .code-line{font-family:'JetBrains Mono',monospace;font-size:0.78rem;margin-bottom:9px;white-space:pre;}
+  .code-line .k{color:var(--brass-bright);}
+  .code-line .s{color:#8FBF9F;}
+  .code-line .c{color:rgba(247,246,242,0.4);}
+
+  /* ===== SECTION SHARED ===== */
+  section{padding:90px 0;}
+  .section-head{margin-bottom:52px;}
+  .section-num{
+    font-family:'JetBrains Mono',monospace;color:var(--brass);
+    font-size:0.8rem;letter-spacing:0.08em;margin-bottom:10px;display:block;
+  }
+  .section-head h2{font-size:2.1rem;color:var(--navy);font-weight:700;}
+  .section-head p{color:var(--slate);margin-top:10px;max-width:560px;}
+
+  /* ===== ABOUT ===== */
+  #about{background:var(--paper-dim);border-top:1px solid var(--line);border-bottom:1px solid var(--line);}
+  .about-grid{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:start;}
+  .about-text p{color:var(--slate);margin-bottom:16px;}
+  .stats{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line);border:1px solid var(--line);}
+  .stat{background:var(--paper);padding:26px 22px;}
+  .stat .num{font-family:'Space Grotesk',sans-serif;font-size:2.1rem;font-weight:700;color:var(--navy);}
+  .stat .label{font-size:0.82rem;color:var(--slate);margin-top:4px;}
+
+  /* ===== SKILLS ===== */
+  .skills-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border:1px solid var(--line);}
+  .skill-card{background:var(--paper);padding:30px 26px;}
+  .skill-card h3{font-size:1.05rem;color:var(--navy);margin-bottom:10px;}
+  .skill-card p{font-size:0.9rem;color:var(--slate);margin-bottom:14px;}
+  .tag-row{display:flex;flex-wrap:wrap;gap:8px;}
+  .tag{
+    font-family:'JetBrains Mono',monospace;font-size:0.72rem;
+    padding:5px 10px;background:var(--paper-dim);color:var(--navy);
+    border:1px solid var(--line);border-radius:20px;
+  }
+
+  /* ===== PROJECTS ===== */
+  .projects-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:26px;}
+  .project-card{
+    border:1px solid var(--line);background:var(--paper);
+    transition:box-shadow .25s ease, transform .25s ease;
+  }
+  .project-card:hover{box-shadow:0 20px 40px -20px rgba(14,27,50,0.25);transform:translateY(-3px);}
+  .project-thumb{
+    height:170px;background:linear-gradient(135deg,var(--navy),var(--navy-soft));
+    position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;
+  }
+  .project-thumb .ptag{
+    font-family:'JetBrains Mono',monospace;color:rgba(247,246,242,0.4);font-size:0.75rem;
+  }
+  .project-body{padding:22px 24px;}
+  .project-body .p-cat{font-family:'JetBrains Mono',monospace;font-size:0.72rem;color:var(--brass);text-transform:uppercase;letter-spacing:0.05em;}
+  .project-body h3{font-size:1.15rem;color:var(--navy);margin:8px 0 8px;}
+  .project-body p{font-size:0.9rem;color:var(--slate);margin-bottom:14px;}
+  .project-link{font-size:0.85rem;font-weight:600;color:var(--navy);display:inline-flex;align-items:center;gap:6px;}
+  .project-link:hover{color:var(--brass);}
+
+  /* ===== EXPERIENCE (timeline) ===== */
+  .timeline{position:relative;padding-left:32px;}
+  .timeline::before{content:'';position:absolute;left:5px;top:6px;bottom:6px;width:1px;background:var(--line);}
+  .t-item{position:relative;padding-bottom:44px;}
+  .t-item:last-child{padding-bottom:0;}
+  .t-item::before{
+    content:'';position:absolute;left:-32px;top:5px;width:11px;height:11px;
+    border-radius:50%;background:var(--paper);border:2px solid var(--brass);
+  }
+  .t-date{font-family:'JetBrains Mono',monospace;font-size:0.78rem;color:var(--brass);margin-bottom:6px;}
+  .t-item h3{font-size:1.1rem;color:var(--navy);margin-bottom:6px;}
+  .t-item p{color:var(--slate);font-size:0.92rem;max-width:600px;}
+
+  /* ===== CONTACT ===== */
+  #contact{background:var(--navy);color:var(--paper);}
+  #contact .section-num{color:var(--brass-bright);}
+  #contact .section-head h2{color:var(--paper);}
+  #contact .section-head p{color:rgba(247,246,242,0.65);}
+  .contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:50px;}
+  .contact-list{display:flex;flex-direction:column;gap:22px;}
+  .contact-item{display:flex;align-items:center;gap:16px;}
+  .c-icon{
+    width:42px;height:42px;border:1px solid rgba(247,246,242,0.2);border-radius:50%;
+    display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--brass-bright);
+  }
+  .contact-item a, .contact-item span{font-size:0.98rem;}
+  .contact-item .c-label{display:block;font-size:0.75rem;color:rgba(247,246,242,0.5);margin-bottom:2px;font-family:'JetBrains Mono',monospace;}
+  .social-row{display:flex;gap:14px;margin-top:30px;}
+  .social-row a{
+    width:44px;height:44px;border:1px solid rgba(247,246,242,0.2);border-radius:50%;
+    display:flex;align-items:center;justify-content:center;transition:all .2s;
+  }
+  .social-row a:hover{background:var(--brass);border-color:var(--brass);}
+  .contact-form{display:flex;flex-direction:column;gap:14px;}
+  .contact-form input, .contact-form textarea{
+    background:rgba(247,246,242,0.06);border:1px solid rgba(247,246,242,0.18);
+    color:var(--paper);padding:13px 16px;font-family:'Inter',sans-serif;font-size:0.92rem;
+    border-radius:var(--radius);
+  }
+  .contact-form input::placeholder, .contact-form textarea::placeholder{color:rgba(247,246,242,0.4);}
+  .contact-form textarea{resize:vertical;min-height:110px;}
+  .contact-form button{
+    background:var(--brass);color:var(--navy);border:none;padding:14px 26px;
+    font-weight:700;font-size:0.92rem;border-radius:var(--radius);cursor:pointer;
+    align-self:flex-start;transition:background .2s;
+  }
+  .contact-form button:hover{background:var(--brass-bright);}
+
+  footer{
+    background:var(--navy);border-top:1px solid rgba(247,246,242,0.1);
+    padding:26px 0;color:rgba(247,246,242,0.5);font-size:0.82rem;
+    display:flex;justify-content:space-between;
+  }
+  footer .wrap{display:flex;justify-content:space-between;width:100%;flex-wrap:wrap;gap:10px;}
+
+  /* ===== RESPONSIVE ===== */
+  @media (max-width:860px){
+    .hero .wrap{grid-template-columns:1fr;}
+    .browser-mock{transform:none;order:-1;}
+    .about-grid, .contact-grid{grid-template-columns:1fr;}
+    .skills-grid{grid-template-columns:1fr 1fr;}
+    .projects-grid{grid-template-columns:1fr;}
+    .hero h1{font-size:2.4rem;}
+    .nav-links{
+      position:fixed;top:69px;left:0;right:0;background:var(--paper);
+      flex-direction:column;padding:20px 32px;gap:18px;
+      border-bottom:1px solid var(--line);
+      transform:translateY(-120%);transition:transform .25s ease;
+    }
+    .nav-links.open{transform:translateY(0);}
+    .burger{display:block;}
+    .nav-cta{display:none;}
+  }
+  @media (max-width:560px){
+    .skills-grid{grid-template-columns:1fr;}
+    .stats{grid-template-columns:1fr;}
+    .hero{padding:80px 0 60px;}
+    .wrap{padding:0 20px;}
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    html{scroll-behavior:auto;}
+    *{transition:none !important;}
+  }
+</style>
+</head>
+<body>
+<a href="#main" class="skip-link">Skip to content</a>
+
+<header>
+  <nav>
+    <a href="#" class="logo">Naresh<span class="dot">.</span>dev</a>
+    <button class="burger" id="burger" aria-label="Toggle menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+    <div class="nav-links" id="navLinks">
+      <a href="#about">About</a>
+      <a href="#skills">Skills</a>
+      <a href="#projects">Projects</a>
+      <a href="#experience">Experience</a>
+      <a href="#contact" class="nav-cta">Get in touch</a>
+    </div>
+  </nav>
+</header>
+
+<main id="main">
+  <!-- HERO -->
+  <section class="hero">
+    <div class="wrap">
+      <div>
+        <span class="eyebrow">WordPress Developer</span>
+        <h1>Naresh Kumar builds <em>fast, reliable</em> WordPress websites.</h1>
+        <p class="lead">1–3 years of experience turning designs into custom themes, plugins, and performance-tuned WordPress sites for small businesses and agencies.</p>
+        <div class="hero-actions">
+          <a href="#projects" class="btn btn-primary">View my work</a>
+          <a href="#contact" class="btn btn-ghost">Hire me</a>
+        </div>
+      </div>
+      <div class="browser-mock">
+        <div class="browser-bar">
+          <span class="b-dot"></span><span class="b-dot"></span><span class="b-dot"></span>
+          <span class="b-url">naresh-kumar.dev</span>
+        </div>
+        <div class="browser-body">
+          <div class="code-line"><span class="c">// functions.php</span></div>
+          <div class="code-line"><span class="k">function</span> nk_setup_theme() {</div>
+          <div class="code-line">&nbsp;&nbsp;add_theme_support(<span class="s">'post-thumbnails'</span>);</div>
+          <div class="code-line">&nbsp;&nbsp;add_theme_support(<span class="s">'custom-logo'</span>);</div>
+          <div class="code-line">&nbsp;&nbsp;register_nav_menus([</div>
+          <div class="code-line">&nbsp;&nbsp;&nbsp;&nbsp;<span class="s">'primary'</span> =&gt; <span class="s">'Main Menu'</span></div>
+          <div class="code-line">&nbsp;&nbsp;]);</div>
+          <div class="code-line">}</div>
+          <div class="code-line"><span class="k">add_action</span>(<span class="s">'after_setup_theme'</span>, <span class="s">'nk_setup_theme'</span>);</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section id="about">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="section-num">01 / About</span>
+        <h2>Who I am</h2>
+      </div>
+      <div class="about-grid">
+        <div class="about-text">
+          <p>I'm Naresh Kumar, a WordPress developer with 1–3 years of hands-on experience building websites for small businesses, startups, and agencies. I work across custom themes, plugin development, and page builders like Elementor, focusing on clean code and fast page speed.</p>
+          <p>I enjoy turning a Figma design or a rough idea into a working, easy-to-manage WordPress site — one that the client can actually update themselves without calling a developer every time.</p>
+          <p><em>[Edit this section with your own story, tools you specialise in, and what kind of clients you like to work with.]</em></p>
+        </div>
+        <div class="stats">
+          <div class="stat"><div class="num">1-3</div><div class="label">Years of experience</div></div>
+          <div class="stat"><div class="num">20+</div><div class="label">Websites delivered</div></div>
+          <div class="stat"><div class="num">100%</div><div class="label">Responsive builds</div></div>
+          <div class="stat"><div class="num">A+</div><div class="label">Page speed focus</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SKILLS -->
+  <section id="skills">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="section-num">02 / Skills</span>
+        <h2>What I work with</h2>
+        <p>Core tools and technologies I use to design, build, and maintain WordPress websites.</p>
+      </div>
+      <div class="skills-grid">
+        <div class="skill-card">
+          <h3>WordPress Development</h3>
+          <p>Custom themes, child themes, and site setup from scratch.</p>
+          <div class="tag-row">
+            <span class="tag">Custom Themes</span>
+            <span class="tag">Gutenberg</span>
+            <span class="tag">WooCommerce</span>
+          </div>
+        </div>
+        <div class="skill-card">
+          <h3>Front-End</h3>
+          <p>Converting designs into pixel-accurate, responsive layouts.</p>
+          <div class="tag-row">
+            <span class="tag">HTML5</span>
+            <span class="tag">CSS3</span>
+            <span class="tag">JavaScript</span>
+          </div>
+        </div>
+        <div class="skill-card">
+          <h3>Back-End</h3>
+          <p>PHP logic, custom plugins, and database work.</p>
+          <div class="tag-row">
+            <span class="tag">PHP</span>
+            <span class="tag">MySQL</span>
+            <span class="tag">REST API</span>
+          </div>
+        </div>
+        <div class="skill-card">
+          <h3>Page Builders</h3>
+          <p>Fast client-editable pages using popular builders.</p>
+          <div class="tag-row">
+            <span class="tag">Elementor</span>
+            <span class="tag">WPBakery</span>
+            <span class="tag">ACF</span>
+          </div>
+        </div>
+        <div class="skill-card">
+          <h3>Performance & SEO</h3>
+          <p>Speed optimisation and on-page SEO basics.</p>
+          <div class="tag-row">
+            <span class="tag">Caching</span>
+            <span class="tag">Image Optim</span>
+            <span class="tag">Yoast SEO</span>
+          </div>
+        </div>
+        <div class="skill-card">
+          <h3>Tools</h3>
+          <p>Day-to-day tools for development and deployment.</p>
+          <div class="tag-row">
+            <span class="tag">Git</span>
+            <span class="tag">Figma</span>
+            <span class="tag">Local / cPanel</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROJECTS -->
+  <section id="projects" style="background:var(--paper-dim);border-top:1px solid var(--line);border-bottom:1px solid var(--line);">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="section-num">03 / Projects</span>
+        <h2>Selected work</h2>
+        <p>A few example projects — replace these with your own case studies, screenshots, and live links.</p>
+      </div>
+      <div class="projects-grid">
+        <div class="project-card">
+          <div class="project-thumb"><span class="ptag mono">project-01.jpg</span></div>
+          <div class="project-body">
+            <span class="p-cat">Business Website</span>
+            <h3>Local Business Site</h3>
+            <p>Custom WordPress theme with booking form, built for a local service business.</p>
+            <a href="#" class="project-link">View project →</a>
+          </div>
+        </div>
+        <div class="project-card">
+          <div class="project-thumb"><span class="ptag mono">project-02.jpg</span></div>
+          <div class="project-body">
+            <span class="p-cat">E-commerce</span>
+            <h3>WooCommerce Store</h3>
+            <p>Online store setup with custom product pages and payment gateway integration.</p>
+            <a href="#" class="project-link">View project →</a>
+          </div>
+        </div>
+        <div class="project-card">
+          <div class="project-thumb"><span class="ptag mono">project-03.jpg</span></div>
+          <div class="project-body">
+            <span class="p-cat">Landing Page</span>
+            <h3>Product Landing Page</h3>
+            <p>High-converting Elementor landing page with A/B tested layouts.</p>
+            <a href="#" class="project-link">View project →</a>
+          </div>
+        </div>
+        <div class="project-card">
+          <div class="project-thumb"><span class="ptag mono">project-04.jpg</span></div>
+          <div class="project-body">
+            <span class="p-cat">Blog / Content</span>
+            <h3>Content Blog Rebuild</h3>
+            <p>Migrated and redesigned an existing blog for better speed and SEO.</p>
+            <a href="#" class="project-link">View project →</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- EXPERIENCE -->
+  <section id="experience">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="section-num">04 / Experience</span>
+        <h2>Where I've worked</h2>
+      </div>
+      <div class="timeline">
+        <div class="t-item">
+          <div class="t-date">2024 — Present</div>
+          <h3>WordPress Developer — [Company Name]</h3>
+          <p>Building and maintaining client websites, custom themes, and plugin integrations. Working directly with designers and clients on requirements.</p>
+        </div>
+        <div class="t-item">
+          <div class="t-date">2023 — 2024</div>
+          <h3>Junior WordPress Developer — [Company Name]</h3>
+          <p>Started as a junior developer working on theme customisation, bug fixes, and WooCommerce stores.</p>
+        </div>
+        <div class="t-item">
+          <div class="t-date">2023</div>
+          <h3>Freelance Projects</h3>
+          <p>Delivered WordPress websites for small business clients found through freelance platforms and referrals.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section id="contact">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="section-num">05 / Contact</span>
+        <h2>Let's work together</h2>
+        <p>Have a WordPress project in mind? Send a message or reach out directly.</p>
+      </div>
+      <div class="contact-grid">
+        <div>
+          <div class="contact-list">
+            <div class="contact-item">
+              <div class="c-icon">✉</div>
+              <div><span class="c-label">Email</span><a href="mailto:naresh.kumar@example.com">naresh.kumar@example.com</a></div>
+            </div>
+            <div class="contact-item">
+              <div class="c-icon">☎</div>
+              <div><span class="c-label">Phone</span><a href="tel:+910000000000">+91 00000 00000</a></div>
+            </div>
+            <div class="contact-item">
+              <div class="c-icon">📍</div>
+              <div><span class="c-label">Location</span><span>India</span></div>
+            </div>
+          </div>
+          <div class="social-row">
+            <a href="https://github.com/yourusername" aria-label="GitHub" target="_blank" rel="noopener">GH</a>
+            <a href="https://linkedin.com/in/yourusername" aria-label="LinkedIn" target="_blank" rel="noopener">in</a>
+            <a href="https://wa.me/910000000000" aria-label="WhatsApp" target="_blank" rel="noopener">WA</a>
+          </div>
+        </div>
+        <form class="contact-form" onsubmit="return false;">
+          <input type="text" placeholder="Your name" required>
+          <input type="email" placeholder="Your email" required>
+          <textarea placeholder="Tell me about your project"></textarea>
+          <button type="submit">Send message</button>
+        </form>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>© 2026 Naresh Kumar. All rights reserved.</span>
+    <span class="mono">Built with HTML & CSS</span>
+  </div>
+</footer>
+
+<script>
+  const burger = document.getElementById('burger');
+  const navLinks = document.getElementById('navLinks');
+  burger.addEventListener('click', () => {
+    const isOpen = navLinks.classList.toggle('open');
+    burger.setAttribute('aria-expanded', isOpen);
+  });
+  navLinks.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
+    navLinks.classList.remove('open');
+    burger.setAttribute('aria-expanded', 'false');
+  }));
+
+  // Contact form: no backend, so just show a friendly note
+  document.querySelector('.contact-form').addEventListener('submit', function(e){
+    e.preventDefault();
+    alert('Yeh demo form hai — GitHub Pages par backend nahi hota. Formspree ya email link use karein.');
+  });
+</script>
+</body>
+</html>
