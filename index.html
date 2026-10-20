@@ -15,7 +15,13 @@ html{scroll-behavior:smooth;scroll-padding-top:env(safe-area-inset-top,0px)}
 body{background:var(--bg);color:var(--fg);font-family:'Space Grotesk',system-ui,sans-serif;overflow-x:hidden;line-height:1.6}
 .mono{font-family:'JetBrains Mono',ui-monospace,monospace}
 a{color:inherit;text-decoration:none}
-#gl{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}
+:root{--mut:#b3b9cc}
+#vdark{background:#05060b;opacity:0}
+#vf,#vshade,#vdark,#gl{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;display:block}
+#vf{opacity:0;transition:opacity 1.4s ease}#vf.on{opacity:1}
+/* Video ke upar halka kaala parda, taaki text saaf padhe (suraj aur badal wale hisse chamakdaar hain) */
+#vshade{background:radial-gradient(ellipse at 50% 45%,rgba(5,6,11,.22),rgba(5,6,11,.6) 100%),linear-gradient(rgba(5,6,11,.4),rgba(5,6,11,.05) 30%,rgba(5,6,11,.05) 70%,rgba(5,6,11,.45))}
+main{text-shadow:0 2px 20px rgba(0,0,0,.55)}.g,.btn{text-shadow:none}
 main,footer{position:relative;z-index:1}
 nav{position:fixed;top:0;left:0;right:0;z-index:20;padding:calc(env(safe-area-inset-top,0px) + 14px) 5vw 14px;display:flex;justify-content:space-between;align-items:center}
 .logo{font-weight:700;letter-spacing:.12em}.logo b{color:var(--red)}
@@ -75,6 +81,7 @@ footer{border-top:1px solid var(--bd);padding:30px 6vw;display:flex;justify-cont
 </style>
 </head>
 <body>
+<canvas id="vf"></canvas><div id="vshade"></div><div id="vdark"></div>
 <canvas id="gl"></canvas>
 <nav>
   <a href="#hero" class="logo">NARESH<b>.DEV</b></a>
@@ -190,7 +197,7 @@ footer{border-top:1px solid var(--bd);padding:30px 6vw;display:flex;justify-cont
   </div>
   <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
     <a class="btn p" style="background:#10b981;box-shadow:0 12px 36px rgba(16,185,129,.3);color:#04130d" href="https://wa.me/919106787908" target="_blank" rel="noopener noreferrer">WhatsApp</a>
-    <a class="btn s" href="linkedin.com/in/nareshkumar-parangi-9b829628b" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+    <a class="btn s" href="https://www.linkedin.com/in/nareshkumar-parangi-9b829628b" target="_blank" rel="noopener noreferrer">LinkedIn</a>
     <a class="btn s" href="https://github.com" target="_blank" rel="noopener noreferrer">GitHub</a>
   </div>
 </div></section>
@@ -243,6 +250,102 @@ addEventListener('resize',()=>{C.aspect=W()/H();C.updateProjectionMatrix();R.set
   C.position.z=16-Math.sin(p*Math.PI)*3;C.position.x+=(mx*3-C.position.x)*.04;C.position.y+=(-my*2-C.position.y)*.04;C.lookAt(0,0,0);
   R.render(S,C)})();
 }catch(e){}})();
+</script>
+
+<script>
+/* ====== Scroll video (frames) ======
+   Page scroll karte hi video aage-peeche chalta hai: pankh samudar me, Dwarka, phir aasmaan. */
+(()=>{
+  const FRAME_COUNT = 160;               // vframes folder me kitni images hain
+  const FRAME_DIR   = "vframes/";        // folder ka naam
+  const IDLE_DELAY  = 600;               // scroll rukne ke kitne ms baad halki animation shuru ho
+  const IDLE_FRAMES = 3;                 // rukne par kitne frames aage-peeche behein (0 = band)
+  const IDLE_PERIOD = 9;                 // ek aana-jaana kitne second me (bada = dheere)
+  const BREATH_ZOOM = 0.025;             // halka zoom in/out (0 = band)
+  const MOUSE_SHIFT = 10;                // mouse hilane par parallax (0 = band)
+
+  const cv = document.getElementById("vf"), ctx = cv.getContext("2d");
+  const dark = document.getElementById("vdark");
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const frames = new Array(FRAME_COUNT).fill(null);
+  let cw = 0, ch = 0, target = 0, smooth = 0, idleMix = 0;
+  let lastScroll = performance.now(), mx = 0, my = 0, sx = 0, sy = 0;
+
+  /* Frames load karna: pehle door door ki frames (poori range jaldi dikhe), phir beech ki */
+  const order = [], seen = new Set();
+  for (const step of [16, 8, 4, 2, 1])
+    for (let i = 0; i < FRAME_COUNT; i += step) if (!seen.has(i)) { seen.add(i); order.push(i); }
+  order.forEach((i) => {
+    const img = new Image();
+    img.decoding = "async";
+    img.onload = () => { frames[i] = img; cv.classList.add("on"); };
+    img.src = FRAME_DIR + "f_" + String(i + 1).padStart(3, "0") + ".webp";
+  });
+
+  function nearest(i) {
+    if (frames[i]) return frames[i];
+    for (let d = 1; d < FRAME_COUNT; d++) {
+      if (frames[i - d]) return frames[i - d];
+      if (frames[i + d]) return frames[i + d];
+    }
+    return null;
+  }
+
+  function resize() {
+    const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+    cw = cv.width = Math.round(innerWidth * dpr);
+    ch = cv.height = Math.round(innerHeight * dpr);
+  }
+  addEventListener("resize", resize); resize();
+
+  function readScroll() {
+    const max = document.documentElement.scrollHeight - innerHeight;
+    target = max > 0 ? Math.min(Math.max(scrollY / max, 0), 1) : 0;
+  }
+  addEventListener("scroll", () => { readScroll(); lastScroll = performance.now(); }, { passive: true });
+  addEventListener("load", readScroll);
+  new ResizeObserver(readScroll).observe(document.body);   // page lamba/chhota ho to dobara napo
+  readScroll();
+
+  addEventListener("mousemove", (e) => { mx = (e.clientX / innerWidth - .5) * 2; my = (e.clientY / innerHeight - .5) * 2; });
+
+  let zoom = 1.04, px = 0, py = 0;
+  function drawImg(img, alpha) {
+    if (!img) return;
+    const s = Math.max(cw / img.naturalWidth, ch / img.naturalHeight) * zoom;
+    const w = img.naturalWidth * s, h = img.naturalHeight * s;
+    ctx.globalAlpha = alpha;
+    ctx.drawImage(img, (cw - w) / 2 + px, (ch - h) / 2 + py, w, h);
+  }
+  function draw(f) {
+    const i = Math.floor(f), k = f - i;
+    drawImg(nearest(i), 1);
+    if (k > 0.01 && i + 1 < FRAME_COUNT) drawImg(nearest(i + 1), k);   // do frames ko mila do: smooth movement
+    ctx.globalAlpha = 1;
+  }
+
+  (function loop() {
+    requestAnimationFrame(loop);
+    if (document.hidden) return;
+    const now = performance.now();
+    smooth += (target - smooth) * 0.1;
+
+    // Scroll ruke to frames halke se behte rahein
+    idleMix += ((!reduce && now - lastScroll > IDLE_DELAY ? 1 : 0) - idleMix) * 0.03;
+    const phase = 0.5 - 0.5 * Math.cos(now / 1000 * 2 * Math.PI / IDLE_PERIOD);
+    const extra = idleMix * IDLE_FRAMES * phase * (smooth > 0.9 ? -1 : 1);
+
+    sx += (mx - sx) * 0.05; sy += (my - sy) * 0.05;
+    zoom = 1.04 + (reduce ? 0 : BREATH_ZOOM * Math.sin(now / 1000 * 0.4));
+    px = reduce ? 0 : -sx * MOUSE_SHIFT; py = reduce ? 0 : -sy * MOUSE_SHIFT * 0.6;
+
+    // Aakhri hisse me video chamakdaar (badal) hota hai, isliye parda thoda gehra kar do
+    const u = Math.min(Math.max((smooth - 0.72) / 0.22, 0), 1);
+    dark.style.opacity = (u * u * (3 - 2 * u) * 0.32).toFixed(3);
+
+    draw(Math.min(Math.max(smooth * (FRAME_COUNT - 1) + extra, 0), FRAME_COUNT - 1));
+  })();
+})();
 </script>
 </body>
 </html>
